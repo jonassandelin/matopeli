@@ -3,7 +3,7 @@ import time
 import random
 import ctypes
 
-# Pisteet
+# Pistesysteemi
 score = 0
 high_score = 0
 
@@ -15,7 +15,7 @@ win.setup(width=600, height=600)
 win.tracer(0)
 delay = 0.1
 
-# Luodaan käärmeen pää ruudulle
+# Luodaan madon/käärmeen pää ruudulle
 head = turtle.Turtle()
 head.speed(0)
 head.shape("circle")
@@ -32,7 +32,7 @@ food.color("red")
 food.penup()
 food.goto(0,100)
 
-# käärmeen keho
+# käärmeen keho, tähän lisätään osia, kun mato syö omenan
 body = []
 
 # Näytetään pisteet ruudulla
@@ -45,7 +45,8 @@ pen.hideturtle()
 pen.goto(0, 260)
 pen.write("Score: 0  High Score: 0", align="center", font=("Comic Sans", 24, "normal"))
 
-# määritetään miten käärme liikkuu
+# määritetään miten käärme/mato liikkuu
+
 def go_up():
     if head.direction != "down":
         head.direction = "up"
@@ -61,12 +62,13 @@ def go_left():
 def go_right():
     if head.direction != "left":
         head.direction = "right"
-
+# määritetään mitä muutoksia tehdään kun liikutaan. 
+# Esim. ylös painessa, pään koordinaatti liikkuu 20 koordinaattia 
+# ylös pelin päivittäessä ruutua.
 def move():
     if head.direction == "up":
         y = head.ycor()
         head.sety(y + 20)
-
     if head.direction == "down":
         y = head.ycor()
         head.sety(y - 20)
@@ -92,7 +94,9 @@ win.onkeypress(go_right, "d")
 while True:
     win.update()
 
-    # Jos käärme menee rajojen ulkopuolelle: peli päättyy
+    # Jos käärme menee rajojen ulkopuolelle niin peli päättyy
+    # lähetetään myös viesti käyttäjälle, että hän on hävinnyt
+    # high score kuitenkin pysyy, jotta voidaan vertailla muihin yrityksiin
     if head.xcor()>290 or head.xcor()<-290 or head.ycor()>290 or head.ycor()<-290:
         head.goto(0,0)
         head.direction = "stop"
@@ -105,21 +109,21 @@ while True:
         # Nollataan käärmeen pituus
         body.clear()
 
-        # Nollataan pisteet
+        # Nollataan pisteet, high score pysyy samana
         score = 0
-
+        # Päivitetään pisteet
         pen.clear()
         pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Comic Sans", 24, "normal")) 
 
 
-    # Jos käärme syö ruoan niin se kasvaa yhdellä ja uusi ruoka arvotaan.
+    # Jos käärme/mato syö ruoan niin se kasvaa yhdellä ja uuden ruoan paikka arvotaan.
     if head.distance(food) < 20:
         # arvotaan omenan uusi paikka
         x = random.randint(-290, 290)
         y = random.randint(-290, 290)
         food.goto(x,y)
 
-        # lisätään käärmeen pituutta
+        # lisätään käärmeen/madon pituutta
         new_bod = turtle.Turtle()
         new_bod.speed(0)
         new_bod.shape("square")
@@ -128,12 +132,13 @@ while True:
         body.append(new_bod)
 
 
-        # Lisätään pisteitä
+        # Lisätään pisteitä, kun kerätään omena
         score += 10
 
         if score > high_score:
             high_score = score
         
+        # Päivitetään pisteet
         pen.clear()
         pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Comic Sans", 24, "normal")) 
 
@@ -150,15 +155,15 @@ while True:
 
     move()    
 
-    # Jos käärme osuu itseensä, peli loppuu.
+    # Jos käärme/mato osuu itseensä, peli loppuu. 
+    # Lähetetään jälleen käyttäjälle viesti.
     for bod in body:
         if bod.distance(head) < 20:
-            time.sleep(1)
             head.goto(0,0)
             head.direction = "stop"
             ctypes.windll.user32.MessageBoxW(0, "HÄHÄÄ, HÄVISIT", "Luuseri", 1)
         
-            # Tyhjennetään lista
+            # Poistetaan "kuollut" käärme/mato
             for bod in body:
                 bod.goto(1000, 1000)
 
@@ -167,7 +172,7 @@ while True:
             # Nollataan pisteet
             score = 0
 
-            # Päivitetään pisteet
+            # Päivitetään pistetilanne
             pen.clear()
             pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Comic Sans", 24, "normal"))
 
