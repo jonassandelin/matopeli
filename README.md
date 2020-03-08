@@ -11,4 +11,4 @@ Miten saan pelin toimimaan?
 
 -Kirjoita komentokehoitteeseen "python snake.py"
 
-Tätä varten tarvitsee olla python asennettuna.
+Tätä varten tarvitsee olla python asennettuna. Peli onnea!
